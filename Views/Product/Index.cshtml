@@ -1,0 +1,107 @@
+﻿@model IEnumerable<product>
+@using ProductsCRUDMVC.Data.Enum
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<client> UserManager
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Products Page";
+    var user = await UserManager.GetUserAsync(User);
+    bool isAdmin = User.Identity.IsAuthenticated && user?.type == "Admin";
+}
+
+
+
+<h1 style="color: blue">Products</h1>
+
+
+<div class="container">
+    @if (isAdmin)
+    {
+        <p>
+            <a class="btn btn-primary" asp-controller="Product" asp-action="Create">Create new product</a>
+        </p>
+    }
+</div>
+  
+    <div class="row">
+        <div class="col-md-3">
+           <form asp-action="Index" method="get">
+        Designation <br /><input type="text" name="des" /><br /><br />
+        Category <br />
+        <select name="cat" class="form-control">
+        <option value="">All</option>
+        @foreach (var category in Enum.GetNames(typeof(category)))
+        {
+          <option>@category</option>
+         }
+        </select><br /><br />
+        Minimum price <br /><input type="number" name="minPrice"  /><br /><br />
+        Maximum price <br /><input type="number" name="maxPrice"  /><br /><br />
+
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </form>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                @foreach (var item in Model) {
+                  
+
+                    <div class="col-md-4">
+                    <div class="card mb-4 box-shadow" >
+                        <img class="card-img-top" src="@item.Image" width="100%" height="300" alt="Card image cap">
+                        <div class="card-body" >
+                        <p class="card-text">@item.Name </p>
+                        <p class="card-text">@item.Description</p>
+                         <p class="card-text">Price : @item.Price DH </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                             <div class="btn-group" >
+                                     <a type="btn btn-sucess"   class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Details" asp-route-id="@item.IdProd">View</a>
+                                    @if (isAdmin)
+                                    {
+                                        <a type="btn btn-sucess" class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@item.IdProd">Edit</a>
+                                        <a type="btn btn-sucess" class="btn btn-sm btn-outline-secondary" asp-controller="Product" asp-action="Delete" asp-route-id="@item.IdProd">Delete</a>
+                                    }
+                                    
+                             </div>
+                            <small class="text-muted">@item.Category</small>
+                        </div> 
+                        </div> 
+                        </div>
+                    </div>
+
+                  
+                }
+            </div>
+        </div>
+    </div>
+
+
+<style>
+    .container {
+        padding: 20px;
+    }
+
+    .product-item {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px;
+        text-align: center;
+    }
+
+    .product-image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .product-actions {
+        margin-top: 10px;
+    }
+</style>
+
+
+
+
+
+
